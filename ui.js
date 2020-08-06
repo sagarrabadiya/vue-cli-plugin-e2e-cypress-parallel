@@ -1,9 +1,9 @@
 module.exports = (api) => {
   api.describeTask({
-    match: (command) => /vue-cli-service cypress:e2e:parellel/.test(command),
-    description: "Run cypress e2e with multiple processes parellel",
+    match: (command) => /vue-cli-service cypress:e2e:parallel/.test(command),
+    description: "Run cypress e2e with multiple processes parallel",
     link:
-      "https://github.com/sagarrabadiya/vue-cli-plugin-e2e-cypress-parellel#injected-commands",
+      "https://github.com/sagarrabadiya/vue-cli-plugin-e2e-cypress-parallel#injected-commands",
     prompts: [
       {
         name: "mode",

@@ -4,10 +4,10 @@ module.exports = (api, options) => {
   const _ = require("lodash");
 
   api.registerCommand(
-    "cypress:e2e:parellel",
+    "cypress:e2e:parallel",
     {
-      description: "run e2e tests with Cypress parellel with multiple process",
-      usage: "vue-cli-service test:e2e:parellel [options]",
+      description: "run e2e tests with Cypress parallel with multiple process",
+      usage: "vue-cli-service test:e2e:parallel [options]",
       options: {
         "--headless": "run in headless mode without GUI",
         "--mode":

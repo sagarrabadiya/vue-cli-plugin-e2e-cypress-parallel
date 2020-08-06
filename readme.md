@@ -8,7 +8,7 @@ Cypress offers a rich interactive interface for running E2E tests, but currently
 
 ## Injected Commands
 
-- **`vue-cli-service cypress:e2e:parellel`**
+- **`vue-cli-service cypress:e2e:parallel`**
 
   Run e2e tests with `cypress run` with multiple cypress processes.
 
@@ -45,5 +45,5 @@ Cypress doesn't load .env files for your test files the same way as `vue-cli` do
 ## Installing in an Already Created Project
 
 ```sh
-vue add e2e-cypress-parellel
+vue add e2e-cypress-parallel
 ```
