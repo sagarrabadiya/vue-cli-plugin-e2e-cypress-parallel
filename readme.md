@@ -23,6 +23,7 @@ Cypress offers a rich interactive interface for running E2E tests, but currently
   --mode     specify the mode the dev server should run in. (default: production)
   --url      run e2e tests against given url instead of auto-starting dev server
   -s, --spec (headless only) runs a specific spec file. this option is required to divide specs equally between processes (it can be either a file or a glob pattern).
+  -t, --threads number of threads or processes to use for parallel running.
   ```
 
   Additionally:
