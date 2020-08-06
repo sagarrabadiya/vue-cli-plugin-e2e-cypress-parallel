@@ -49,7 +49,7 @@ module.exports = (api) => {
     ],
     onBeforeRun: ({ answers, args }) => {
       if (answers.headless) args.push("--headless");
-      if (answers.mode) args.push("--mode", answers.mode);
+      if (answers.mode) args.push("--mode=" + answers.mode);
       if (answers.url) args.push("--url=" + answers.url);
       if (answers.spec) args.push("--spec=" + answers.spec);
       if (answers.threads) args.push("--threads=" + answers.threads);
