@@ -1,0 +1,31 @@
+{
+  "name": "vue-cli-plugin-e2e-cypress-parellel",
+  "version": "1.0.0",
+  "description": "e2e-cypress plugin for vue-cli to run multiple processes",
+  "main": "index.js",
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "vue",
+    "cli",
+    "e2e-cypress",
+    "multiple processes",
+    "parellel"
+  ],
+  "author": "Sagar Rabadiya",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@vue/cli-shared-utils": "^4.5.0",
+    "cypress": "^3.8.3",
+    "eslint-plugin-cypress": "^2.10.3",
+    "glob": "^7.1.6",
+    "lodash": "^4.17.19"
+  },
+  "peerDependencies": {
+    "@vue/cli-service": "^3.0.0 || ^4.0.0-0"
+  }
+}
