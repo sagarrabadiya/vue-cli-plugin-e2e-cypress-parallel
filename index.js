@@ -40,8 +40,12 @@ module.exports = (api, options) => {
         );
         process.exit(1);
       }
+      if (args.threads && isNaN(args.threads)) {
+        error(`Please provide --threads option as number`);
+        process.exit(1);
+      }
       info(`Starting e2e tests...`);
-      const threads = args.threads || 2;
+      const threads = args.threads ? parseInt(args.threads) : 2;
       const specPerThreads = Math.ceil(specs.length / threads);
       const specChunks = _.chunk(specs, specPerThreads);
 

@@ -52,7 +52,7 @@ module.exports = (api) => {
       if (answers.mode) args.push("--mode", answers.mode);
       if (answers.url) args.push("--url=" + answers.url);
       if (answers.spec) args.push("--spec=" + answers.spec);
-      if (answers.threads) args.push("--threads=" + parseInt(answers.threds));
+      if (answers.threads) args.push("--threads=" + answers.threads);
     },
   });
 };
