@@ -1,6 +1,6 @@
 {
   "name": "vue-cli-plugin-e2e-cypress-parallel",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "e2e-cypress plugin for vue-cli to run multiple processes",
   "main": "index.js",
   "repository": {
@@ -19,7 +19,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@vue/cli-shared-utils": "^4.5.0",
+    "@vue/cli-shared-utils": "^4.2.3",
     "cypress": "^3.8.3",
     "eslint-plugin-cypress": "^2.10.3",
     "glob": "^7.1.6",
