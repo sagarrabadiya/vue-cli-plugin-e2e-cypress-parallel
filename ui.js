@@ -10,6 +10,7 @@ module.exports = (api) => {
         type: "list",
         default: "development",
         choices: [
+          { name: "none", value: false },
           {
             name: "development",
             value: "development",
