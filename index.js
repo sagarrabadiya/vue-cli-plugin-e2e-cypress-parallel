@@ -16,13 +16,13 @@ module.exports = (api, options) => {
           "run e2e tests against given url instead of auto-starting dev server",
         "-s, --spec":
           '(headless only) runs a specific spec file. defaults to "all"',
-        "-t, --threads": "number of threads to use",
+        "-t, --threads": "number of threads to use"
       },
       details:
         `All Cypress CLI options are also supported:\n` +
         chalk.yellow(
           `https://docs.cypress.io/guides/guides/command-line.html#cypress-run`
-        ),
+        )
     },
     async (args, rawArgs) => {
       removeArg(rawArgs, "mode");
@@ -49,25 +49,36 @@ module.exports = (api, options) => {
       const specPerThreads = Math.ceil(specs.length / threads);
       const specChunks = _.chunk(specs, specPerThreads);
 
-      const { url, server } = args.url
+      let { url, server } = args.url
         ? { url: args.url }
         : await api.service.run("serve");
 
       const configs =
         typeof args.config === "string" ? args.config.split(",") : [];
 
+      if (url && url.indexOf(",") >= 0) {
+        url = url.split(",");
+      } else {
+        url = [url];
+      }
+
       const cyArgs = [
         args.headless ? "run" : "open", // open or run
         "--config",
-        [`baseUrl=${url}`, ...configs].join(","),
-        ...rawArgs,
+        ...(configs.length ? [configs.join(",")] : []),
+        ...rawArgs
       ];
 
       let exitCode = null;
       const processes = [];
 
-      specChunks.forEach((specs) => {
-        const localArgs = [...cyArgs, "--spec", `'${specs.join(",")}'`];
+      specChunks.forEach((specs, instanceIndex) => {
+        const localArgs = [
+          ...cyArgs,
+          `baseUrl=${url[instanceIndex % url.length]}`,
+          "--spec",
+          `'${specs.join(",")}'`
+        ];
         const p = getCypressInstance(execa, localArgs);
         processes.push(p);
         if (process.env.VUE_CLI_TEST) {
@@ -105,7 +116,7 @@ module.exports = (api, options) => {
 };
 
 module.exports.defaultModes = {
-  "test:e2e": "production",
+  "test:e2e": "production"
 };
 
 function getCypressInstance(execa, cyArgs) {
