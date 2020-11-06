@@ -62,23 +62,17 @@ module.exports = (api, options) => {
         url = [url];
       }
 
-      const cyArgs = [
-        args.headless ? "run" : "open", // open or run
-        "--config",
-        ...(configs.length ? [configs.join(",")] : []),
-        ...rawArgs
-      ];
-
       let exitCode = null;
       const processes = [];
 
       specChunks.forEach((specs, instanceIndex) => {
-        const localArgs = [
-          ...cyArgs,
-          `baseUrl=${url[instanceIndex % url.length]}`,
-          "--spec",
-          `'${specs.join(",")}'`
+        const cyArgs = [
+          args.headless ? "run" : "open", // open or run
+          "--config",
+          [`baseUrl=${url[instanceIndex % url.length]}`, ...configs].join(","),
+          ...rawArgs
         ];
+        const localArgs = [...cyArgs, "--spec", `'${specs.join(",")}'`];
         const p = getCypressInstance(execa, localArgs);
         processes.push(p);
         if (process.env.VUE_CLI_TEST) {
