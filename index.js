@@ -104,7 +104,7 @@ module.exports = (api, options) => {
         }
       }
 
-      return processes[0];
+      return Promise.all(processes);
     }
   );
 };
