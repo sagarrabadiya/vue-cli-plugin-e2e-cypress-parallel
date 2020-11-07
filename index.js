@@ -46,8 +46,14 @@ module.exports = (api, options) => {
       }
       info(`Starting e2e tests...`);
       const threads = args.threads ? parseInt(args.threads) : 2;
-      const specPerThreads = Math.ceil(specs.length / threads);
-      const specChunks = _.chunk(specs, specPerThreads);
+      const specChunks = [];
+      _.range(0, threads).forEach((i) => {
+        specChunks[i] = [];
+      });
+      specs.forEach((spec, index) => {
+        const chunkIndex = index % threads;
+        specChunks[chunkIndex].push(spec);
+      });
 
       let { url, server } = args.url
         ? { url: args.url }
@@ -62,49 +68,62 @@ module.exports = (api, options) => {
         url = [url];
       }
 
-      let exitCode = null;
-      const processes = [];
-
-      specChunks.forEach((specs, instanceIndex) => {
+      const cypressBinPath = require.resolve("cypress/bin/cypress");
+      const runners = specChunks.map((specs, instanceIndex) => {
+        const baseUrl = url[instanceIndex % url.length];
         const cyArgs = [
           args.headless ? "run" : "open", // open or run
           "--config",
-          [`baseUrl=${url[instanceIndex % url.length]}`, ...configs].join(","),
+          [`baseUrl=${baseUrl}`, ...configs].join(","),
           ...rawArgs
         ];
         const localArgs = [...cyArgs, "--spec", `'${specs.join(",")}'`];
-        const p = getCypressInstance(execa, localArgs);
-        processes.push(p);
-        if (process.env.VUE_CLI_TEST) {
-          p.on("exit", (code) => {
-            if (!exitCode) {
-              exitCode = code;
-            }
+        info(`Starting cypress instance with baseUrl ${baseUrl}`);
+        return execa(cypressBinPath, localArgs, { stdio: "inherit" })
+          .then((result) => {
+            info(`Finished cypress instance with baseUrl ${baseUrl}`);
+            return result;
+          })
+          .catch((result) => {
+            error(`Failed cypress instance with baseUrl ${baseUrl}`);
+            return result;
           });
-        }
-
-        p.on("exit", () => {
-          const index = processes.indexOf(p);
-          processes.splice(index, 1);
-          checkProcess(processes);
-        });
-        p.on("error", () => {
-          const index = processes.indexOf(p);
-          processes.splice(index, 1);
-          checkProcess(processes);
-        });
       });
 
-      function checkProcess(processes) {
-        if (!processes.length) {
-          if (server) {
-            server.close();
-          }
-          process.exit(exitCode);
+      const results = await Promise.all(runners);
+      function exitHandler(exitCode) {
+        info(`Parent Process exited with code ${exitCode}`);
+        if (server) {
+          server.close();
         }
+        runners.forEach((runner) => {
+          runner.kill("SIGTERM", {
+            forceKillAfterTimeout: 2000
+          });
+        });
+        process.exit(exitCode);
       }
+      //do something when app is closing
+      process.on("exit", exitHandler);
 
-      return Promise.all(processes);
+      //catches ctrl+c event
+      process.on("SIGINT", exitHandler);
+
+      // catches "kill pid" (for example: nodemon restart)
+      process.on("SIGUSR1", exitHandler);
+      process.on("SIGUSR2", exitHandler);
+      process.on("SIGTERM", exitHandler);
+
+      //catches uncaught exceptions
+      process.on("uncaughtException", exitHandler);
+
+      const nonZeroExitCodes = results.filter((r) => r.code !== 0);
+
+      if (nonZeroExitCodes.length) {
+        process.exit(nonZeroExitCodes[0]);
+      } else {
+        process.exit(0);
+      }
     }
   );
 };
@@ -112,12 +131,6 @@ module.exports = (api, options) => {
 module.exports.defaultModes = {
   "test:e2e": "production"
 };
-
-function getCypressInstance(execa, cyArgs) {
-  const cypressBinPath = require.resolve("cypress/bin/cypress");
-  const runner = execa(cypressBinPath, cyArgs, { stdio: "inherit" });
-  return runner;
-}
 
 function removeArg(rawArgs, argToRemove, offset = 1) {
   const matchRE = new RegExp(`^--${argToRemove}$`);
