@@ -96,11 +96,6 @@ module.exports = (api, options) => {
         if (server) {
           server.close();
         }
-        runners.forEach((runner) => {
-          runner.kill("SIGTERM", {
-            forceKillAfterTimeout: 2000
-          });
-        });
         process.exit(exitCode);
       }
       //do something when app is closing
@@ -117,6 +112,9 @@ module.exports = (api, options) => {
       //catches uncaught exceptions
       process.on("uncaughtException", exitHandler);
 
+      if (server) {
+        server.close();
+      }
       const nonZeroExitCodes = results.filter((r) => r.code !== 0);
 
       if (nonZeroExitCodes.length) {
